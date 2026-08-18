@@ -133,6 +133,10 @@ contract LotteryTest is Test {
         assertEq(lottery.getClaimablePrize(address(this)), 0);
     }
 
+    function test_initialState_roundIsZero() public view {
+        assertEq(lottery.getRound(), 0);
+    }
+
     function test_getNextDrawTime_equalsDeployTimePlusInterval() public view {
         assertEq(lottery.getNextDrawTime(), block.timestamp + INTERVAL);
     }
@@ -394,6 +398,8 @@ contract LotteryTest is Test {
         _warpAndPerformUpkeep(newLottery);
         uint256[] memory randomWords = new uint256[](3);
         coordinator.fulfillRandomWordsWithOverride(1, address(newLottery), randomWords);
+
+        assertEq(newLottery.getRound(), 1);
 
         feed.updateAnswer(INITIAL_PRICE);
         address secondBuyer = makeAddr("secondBuyer");

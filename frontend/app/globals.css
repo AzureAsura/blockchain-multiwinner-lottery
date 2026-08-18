@@ -1,26 +1,51 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+
 
 body {
-  background: var(--background);
-  color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+
+@layer base {
+
+  body {
+    background:
+      radial-gradient(ellipse 80% 60% at 15% 85%,
+        rgba(14, 165, 233, 0.35) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 70% at 85% 10%,
+        rgba(99, 102, 241, 0.40) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 40% at 50% 50%,
+        rgba(59, 130, 246, 0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 90% 50% at 5% 30%,
+        rgba(37, 99, 235, 0.20) 0%, transparent 45%),
+      radial-gradient(ellipse 70% 80% at 95% 90%,
+        rgba(79, 70, 229, 0.25) 0%, transparent 50%),
+      linear-gradient(135deg, #020817 0%, #030f1f 30%, #040d1c 60%, #06091a 100%);
+    background-attachment: fixed;
+  }
+
+  .card {
+    @apply bg-white/5 backdrop-blur-xl;
+    box-shadow:
+      0 4px 40px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+    .btn-color {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(99, 102, 241, 0.7));
+    box-shadow: 0 4px 24px rgba(59, 130, 246, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  .btn-color:hover {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(99, 102, 241, 0.85));
+    box-shadow: 0 6px 32px rgba(59, 130, 246, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
 }

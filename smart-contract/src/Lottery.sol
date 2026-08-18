@@ -191,6 +191,11 @@ contract Lottery is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
         return s_lotteryState;
     }
 
+    /// @notice Returns the current round number.
+    function getRound() external view returns (uint256) {
+        return s_round;
+    }
+
     function _tierPriceUsd(Tier tier) private pure returns (uint256) {
         if (tier == Tier.ONE) return TIER_ONE_PRICE_USD;
         if (tier == Tier.FIVE) return TIER_FIVE_PRICE_USD;

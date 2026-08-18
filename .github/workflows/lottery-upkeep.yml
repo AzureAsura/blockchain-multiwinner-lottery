@@ -1,0 +1,35 @@
+name: Lottery Upkeep
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lottery-upkeep
+  cancel-in-progress: false
+
+jobs:
+  upkeep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Check and perform upkeep
+        env:
+          RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
+          PRIVATE_KEY: ${{ secrets.UPKEEP_PRIVATE_KEY }}
+          LOTTERY: '0x917be9722a55f18031cf1476bdBbE0fdE3bF6bC7'
+        run: |
+          set -euo pipefail
+          needed=$(cast call "$LOTTERY" "checkUpkeep(bytes)(bool,bytes)" 0x --rpc-url "$RPC_URL" | head -1)
+          echo "upkeepNeeded=$needed"
+          if [ "$needed" = "true" ]; then
+            cast send "$LOTTERY" "performUpkeep(bytes)" 0x \
+              --rpc-url "$RPC_URL" --private-key "$PRIVATE_KEY"
+          else
+            echo "Nothing to do."
+          fi
