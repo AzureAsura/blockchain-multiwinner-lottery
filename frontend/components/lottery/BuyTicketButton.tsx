@@ -10,6 +10,7 @@ const DISABLED_LABELS: Record<Exclude<BuyTicketDisabledReason, null>, string> = 
   'unsupported-chain': 'Switch to a supported network',
   'not-deployed': 'Lottery is not deployed on this network yet',
   calculating: 'A draw is in progress — purchases are paused',
+  'awaiting-draw': 'The draw is due — purchases are paused until it runs',
   'simulation-failed': 'Unable to buy right now',
 }
 

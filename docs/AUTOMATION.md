@@ -2,7 +2,9 @@
 
 ## Context
 
-`Lottery` sudah live & verified di Base Sepolia (`0x917be9722a55f18031cf1476bdBbE0fdE3bF6bC7`, block `45662706`), VRF subscription sudah di-fund dan kontraknya terdaftar sebagai consumer. Satu-satunya bagian yang belum jalan: **tidak ada yang memanggil `performUpkeep`**, jadi draw tidak pernah terjadi sendiri.
+`Lottery` sudah live & verified di Base Sepolia (`0xa95c906dbd0b5262b005c43ead972a0ce7acc9c5`, block `45664854`, interval `1 weeks`), VRF subscription sudah di-fund dan kontraknya terdaftar sebagai consumer. Satu-satunya bagian yang belum jalan: **tidak ada yang memanggil `performUpkeep`**, jadi draw tidak pernah terjadi sendiri.
+
+> Ini deployment kedua. Deployment pertama (`0x917be9722a55f18031cf1476bdBbE0fdE3bF6bC7`, interval 5 menit) sudah menyelesaikan satu round penuh — GitHub Actions workflow terbukti berhasil trigger `performUpkeep` sungguhan (dikonfirmasi lewat `s_lastDrawTimestamp` on-chain cocok persis dengan waktu selesai job) — sebelum di-redeploy dengan interval 1 minggu untuk pemakaian yang lebih realistis.
 
 Rencana awal di `docs/TESTNET.md` langkah 7 adalah mendaftarkan Chainlink Automation upkeep. Itu **tidak lagi mungkin**:
 
@@ -67,7 +69,7 @@ jobs:
         env:
           RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
           PRIVATE_KEY: ${{ secrets.UPKEEP_PRIVATE_KEY }}
-          LOTTERY: '0x917be9722a55f18031cf1476bdBbE0fdE3bF6bC7'
+          LOTTERY: '0xa95c906dbd0b5262b005c43ead972a0ce7acc9c5'
         run: |
           set -euo pipefail
           needed=$(cast call "$LOTTERY" "checkUpkeep(bytes)(bool,bytes)" 0x --rpc-url "$RPC_URL" | head -1)

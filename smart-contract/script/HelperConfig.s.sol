@@ -46,7 +46,7 @@ contract HelperConfig is Script {
         return NetworkConfig({
             vrfCoordinator: 0x5C210eF41CD1a72de73bF76eC39637bB0d3d7BEE,
             priceFeed: 0x4aDC67696bA383F43DD60A9e78F2C97Fbbfc7cb1,
-            interval: 5 minutes,
+            interval: 1 weeks,
             keyHash: 0x9e1344a1247c8a1785d0a4681a27152bffdb43666ae5bf7d14d24a5efd44bf71,
             subscriptionId: 0,
             callbackGasLimit: 500_000,

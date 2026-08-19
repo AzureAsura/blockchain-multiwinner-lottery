@@ -3,6 +3,7 @@
 import { useAccount, useChains, useSimulateContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { lotteryAbi } from '@/lib/generated'
 import type { Tier } from '@/lib/tiers'
+import { useCountdown } from './useCountdown'
 import { useLotteryAddress } from './useLotteryAddress'
 import { useLotteryData } from './useLotteryData'
 import { useTicketPrice } from './useTicketPrice'
@@ -21,6 +22,7 @@ export type BuyTicketDisabledReason =
   | 'unsupported-chain'
   | 'not-deployed'
   | 'calculating'
+  | 'awaiting-draw'
   | 'simulation-failed'
   | null
 
@@ -29,15 +31,21 @@ export function useBuyTicket(tier: Tier) {
   const { isConnected, chainId } = useAccount()
   const chains = useChains()
   const address = useLotteryAddress()
-  const { lotteryState } = useLotteryData()
+  const { lotteryState, nextDrawTime } = useLotteryData()
   const { data: price } = useTicketPrice(tier)
+  const countdown = useCountdown(nextDrawTime, lotteryState)
 
   const value = price !== undefined ? (price * BUFFER_NUMERATOR) / BUFFER_DENOMINATOR : undefined
 
   const isChainSupported = chains.some((chain) => chain.id === chainId)
   const isCalculating = lotteryState === LOTTERY_STATE_CALCULATING
+  // The contract itself still accepts purchases once the interval elapses (state only
+  // flips to CALCULATING once performUpkeep actually runs) — this is a UX guard only,
+  // so a ticket bought right as a draw is due doesn't feel like it vanished into limbo.
+  const isAwaitingDraw = countdown.status === 'awaiting-draw'
 
-  const canSimulate = isConnected && isChainSupported && Boolean(address) && value !== undefined && !isCalculating
+  const canSimulate =
+    isConnected && isChainSupported && Boolean(address) && value !== undefined && !isCalculating && !isAwaitingDraw
 
   const simulation = useSimulateContract({
     address,
@@ -61,9 +69,11 @@ export function useBuyTicket(tier: Tier) {
         ? 'not-deployed'
         : isCalculating
           ? 'calculating'
-          : simulation.error
-            ? 'simulation-failed'
-            : null
+          : isAwaitingDraw
+            ? 'awaiting-draw'
+            : simulation.error
+              ? 'simulation-failed'
+              : null
 
   function buy() {
     if (!simulation.data) return
